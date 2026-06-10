@@ -1,5 +1,5 @@
 {
-    "name": "f1-garage",
+    "name": "@apteryxxyz/f1-garage",
     "version": "0.3.0",
     "description": "Npm package wrapping the jolpica f1 api",
     "main": "./dist/index.js",
@@ -40,6 +40,7 @@
         "url": "https://github.com/JoostWG/f1-garage/issues"
     },
     "homepage": "https://github.com/JoostWG/f1-garage#readme",
+    "dependencies": {},
     "devDependencies": {
         "@eslint/js": "^9.39.2",
         "@stylistic/eslint-plugin": "^5.7.0",
@@ -53,8 +54,5 @@
         "tsup": "^8.5.1",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.53.0"
-    },
-    "dependencies": {
-        "axios": "^1.13.2"
     }
 }

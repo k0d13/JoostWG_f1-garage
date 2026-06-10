@@ -1,25 +1,15 @@
-import axios, {
-    AxiosHeaders,
-    type AxiosInstance,
-    type AxiosRequestConfig,
-    type AxiosResponse,
-} from 'axios';
 import { BadRequest, HttpError, NotFound } from '../errors';
 import type { AnyApiOptions, BadRequestResponse, Pagination, SuccessResponse } from '../types';
 
+export interface RequestConfig extends RequestInit {
+    params?: Record<string, unknown>;
+}
+
 export class ErgastBaseApi {
     public readonly baseUrl: string;
-    protected readonly http: AxiosInstance;
 
     public constructor() {
         this.baseUrl = 'https://api.jolpi.ca/ergast/f1';
-
-        this.http = axios.create({
-            baseURL: this.baseUrl,
-            validateStatus: (status) =>
-                (status >= 200 && status <= 299) || (status >= 400 && status <= 499),
-            headers: new AxiosHeaders().setAccept('application/json'),
-        });
     }
 
     public getPath(resource: string, options: AnyApiOptions): string {
@@ -93,13 +83,20 @@ export class ErgastBaseApi {
     public async get<T extends SuccessResponse>(
         path: string,
         pagination?: Pagination,
-        config?: AxiosRequestConfig,
+        config?: RequestConfig,
     ): Promise<T> {
-        const response = await this.http.get<T | BadRequestResponse>(`${path}.json`, {
-            ...config,
-            params: {
-                ...pagination,
-                ...config?.params,
+        const { params, ...init } = config ?? {};
+
+        const url = this.buildUrl(`${path}.json`, {
+            ...pagination,
+            ...params,
+        });
+
+        const response = await fetch(url, {
+            ...init,
+            headers: {
+                Accept: 'application/json',
+                ...init.headers,
             },
         });
 
@@ -107,20 +104,28 @@ export class ErgastBaseApi {
             throw new NotFound(response);
         }
 
-        if (this.responseIsBadRequest(response)) {
-            throw new BadRequest(response.data.detail);
+        const data = await response.json() as T | BadRequestResponse;
+
+        if (response.status === 400) {
+            throw new BadRequest((data as BadRequestResponse).detail);
         }
 
         if (response.status !== 200) {
             throw new HttpError(response.status);
         }
 
-        return response.data as T;
+        return data as T;
     }
 
-    protected responseIsBadRequest(
-        response: AxiosResponse,
-    ): response is AxiosResponse<BadRequestResponse> {
-        return response.status === 400;
+    protected buildUrl(path: string, params: Record<string, unknown>): string {
+        const url = new URL(`${this.baseUrl}${path}`);
+
+        for (const [key, value] of Object.entries(params)) {
+            if (value !== undefined && value !== null) {
+                url.searchParams.set(key, String(value));
+            }
+        }
+
+        return url.toString();
     }
 }

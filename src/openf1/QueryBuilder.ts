@@ -1,4 +1,3 @@
-import axios, { type AxiosInstance } from 'axios';
 import type { EndpointsMap, WhereClause, WhereOperator } from './types';
 
 export class QueryBuilder<
@@ -6,14 +5,12 @@ export class QueryBuilder<
     T extends EndpointsMap[E] = EndpointsMap[E],
 > {
     protected wheres: WhereClause[];
-    protected readonly http: AxiosInstance;
+    protected readonly baseUrl: string;
 
     public constructor(protected readonly endpoint: E) {
         this.wheres = [];
 
-        this.http = axios.create({
-            baseURL: 'https://api.openf1.org/v1',
-        });
+        this.baseUrl = 'https://api.openf1.org/v1';
     }
 
     public where<K extends Extract<keyof T, string>>(field: K, value: T[K]): this;
@@ -57,11 +54,15 @@ export class QueryBuilder<
     }
 
     public async get(): Promise<T[]> {
-        const response = await this.http.get<T[]>(`/${this.endpoint}`, {
-            params: this.parameters(),
-        });
+        const url = new URL(`${this.baseUrl}/${this.endpoint}`);
 
-        return response.data;
+        for (const [key, value] of Object.entries(this.parameters())) {
+            url.searchParams.set(key, value);
+        }
+
+        const response = await fetch(url);
+
+        return await response.json() as T[];
     }
 
     protected parameters(): Record<string, string> {
