@@ -15,11 +15,17 @@ export interface AlphaListResponse<T> {
     data: T[];
 }
 
+export interface AlphaBaseApiOptions {
+    fetch?: typeof globalThis.fetch;
+}
+
 export class AlphaBaseApi {
     public readonly baseUrl: string;
+    protected readonly fetch: typeof globalThis.fetch;
 
-    public constructor() {
+    public constructor(options?: AlphaBaseApiOptions) {
         this.baseUrl = 'https://api.jolpi.ca/f1/alpha';
+        this.fetch = options?.fetch ?? globalThis.fetch;
     }
 
     public async getList<T>(
@@ -27,7 +33,7 @@ export class AlphaBaseApi {
         params?: Record<string, unknown>,
     ): Promise<AlphaListResponse<T>> {
         const url = this.buildUrl(path, params ?? {});
-        const response = await fetch(url, {
+        const response = await this.fetch(url, {
             headers: { Accept: 'application/json' },
         });
 
@@ -71,7 +77,7 @@ export class AlphaBaseApi {
         params?: Record<string, unknown>,
     ): Promise<T> {
         const url = this.buildUrl(path, params ?? {});
-        const response = await fetch(url, {
+        const response = await this.fetch(url, {
             headers: { Accept: 'application/json' },
         });
 

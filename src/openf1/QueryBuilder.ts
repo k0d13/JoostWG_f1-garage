@@ -6,11 +6,15 @@ export class QueryBuilder<
 > {
     protected wheres: WhereClause[];
     protected readonly baseUrl: string;
+    private readonly fetch: typeof globalThis.fetch;
 
-    public constructor(protected readonly endpoint: E) {
+    public constructor(
+        protected readonly endpoint: E,
+        fetch: typeof globalThis.fetch = globalThis.fetch,
+    ) {
         this.wheres = [];
-
         this.baseUrl = 'https://api.openf1.org/v1';
+        this.fetch = fetch;
     }
 
     public where<K extends Extract<keyof T, string>>(field: K, value: T[K]): this;
@@ -60,7 +64,7 @@ export class QueryBuilder<
             url.searchParams.set(key, value);
         }
 
-        const response = await fetch(url);
+        const response = await this.fetch(url);
 
         return await response.json() as T[];
     }
