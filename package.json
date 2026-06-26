@@ -1,13 +1,18 @@
 {
     "name": "@apteryxxyz/f1-garage",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "description": "Npm package wrapping the jolpica f1 api",
     "main": "./dist/index.js",
     "exports": {
-        "./jolpica": {
-            "types": "./dist/jolpica/index.d.ts",
-            "import": "./dist/jolpica/index.js",
-            "require": "./dist/jolpica/index.js"
+        "./jolpica/alpha": {
+            "types": "./dist/jolpica/alpha/index.d.ts",
+            "import": "./dist/jolpica/alpha/index.js",
+            "require": "./dist/jolpica/alpha/index.js"
+        },
+        "./jolpica/ergast": {
+            "types": "./dist/jolpica/ergast/index.d.ts",
+            "import": "./dist/jolpica/ergast/index.js",
+            "require": "./dist/jolpica/ergast/index.js"
         },
         "./openf1": {
             "types": "./dist/openf1/index.d.ts",
