@@ -368,7 +368,7 @@ export interface AlphaResultItemData {
     components: Record<string, AlphaResultComponentData>;
 }
 
-export interface AlphaRoundData_Basic {
+export interface AlphaBasicRoundData {
     id: string;
     url: string;
     number: number | null;
@@ -387,7 +387,7 @@ export interface AlphaResultsData {
     local_timestamp: string | null;
     timezone: string | null;
     season: AlphaSeasonData;
-    round: AlphaRoundData_Basic;
+    round: AlphaBasicRoundData;
     circuit: AlphaCircuitData;
     component_keys: string[];
     results: AlphaResultItemData[];

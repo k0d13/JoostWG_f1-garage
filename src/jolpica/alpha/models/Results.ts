@@ -6,6 +6,16 @@ import type {
 } from '../types';
 import { Model } from './Model';
 
+export interface SessionItemJson {
+    id: string;
+    url: string;
+    number: number | null;
+    type: string;
+    typeDisplay: string;
+    isCancelled: boolean;
+    scheduledLaps: number | null;
+}
+
 export interface ResultComponentJson {
     key: string;
     name: string;
@@ -37,6 +47,7 @@ export interface ResultItemJson {
 export interface ResultsJson {
     code: string;
     title: string;
+    sessions: SessionItemJson[];
     timestamp: string | null;
     missingTimeData: boolean | null;
     localTimestamp: string | null;
@@ -96,6 +107,7 @@ function mapResultItem(item: AlphaResultItemData): ResultItemJson {
 export class Results extends Model {
     public readonly code: string;
     public readonly title: string;
+    public readonly sessions: SessionItemJson[];
     public readonly timestamp: Date | null;
     public readonly missingTimeData: boolean | null;
     public readonly localTimestamp: string | null;
@@ -115,6 +127,15 @@ export class Results extends Model {
 
         this.code = data.code;
         this.title = data.title;
+        this.sessions = data.sessions.map((s) => ({
+            id: s.id,
+            url: s.url,
+            number: s.number,
+            type: s.type,
+            typeDisplay: s.type_display,
+            isCancelled: s.is_cancelled,
+            scheduledLaps: s.scheduled_laps,
+        }));
         this.timestamp = data.timestamp !== null ? new Date(data.timestamp) : null;
         this.missingTimeData = data.missing_time_data;
         this.localTimestamp = data.local_timestamp;
@@ -134,6 +155,7 @@ export class Results extends Model {
         return {
             code: this.code,
             title: this.title,
+            sessions: this.sessions,
             timestamp: this.timestamp?.toISOString() ?? null,
             missingTimeData: this.missingTimeData,
             localTimestamp: this.localTimestamp,

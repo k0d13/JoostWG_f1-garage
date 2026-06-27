@@ -1,6 +1,6 @@
 {
     "name": "@apteryxxyz/f1-garage",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "description": "Npm package wrapping the jolpica f1 api",
     "main": "./dist/index.js",
     "exports": {
